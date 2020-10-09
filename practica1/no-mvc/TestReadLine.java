@@ -1,8 +1,9 @@
 import java.io.*;
 
-class TestReadLine {
+public class TestReadLine {
+
   public static void main(String[] args) {
-    BufferedReader in = new EditableBufferedReader(
+    EditableBufferedReader in = new EditableBufferedReader(
       new InputStreamReader(System.in));
     String str = null;
     try {
@@ -10,4 +11,5 @@ class TestReadLine {
     } catch (IOException e) { e.printStackTrace(); }
     System.out.println("\nline is: " + str);
   }
+  
 }
