@@ -4,11 +4,15 @@ import java.util.*;
 
 /**
 *
-*   @author akaKush
+*   @author akaKush, JordiParra
 */
 
 
 public class EditableBufferedReader extends BufferedReader {
+
+    public static void main(String[] args) { //afegeixo main ja que sino em dóna error al executar
+        // TODO code application logic here
+    }
 
     private static final char ESC = '\033';
 
@@ -21,10 +25,14 @@ public class EditableBufferedReader extends BufferedReader {
 
     private static final int USELESS = 202;
     private static final int BACKSPACE = 127;
+    private static final int ENTER = 13;
 
     
     public EditableBufferedReader(Reader in){
         super(in);
+        this.linia = new Line();
+        this.posicio = 0;
+        this.length = 0;
     }
 
     public void setRaw() throws InterruptedException, IOException {
@@ -97,7 +105,49 @@ public class EditableBufferedReader extends BufferedReader {
     }
 
 
-    public String readLine() throws IOException {}
+    public String readLine() throws IOException {
+        int car = 0;
+        do{
+            car = this.read();
+            if (car == '[' || car == 'O') {
+                switch (car = super.read()) {
+                    case 'C':
+                        return DRETA;
+                    case 'D':
+                        return ESQUERRA;
+                    case 'H':
+                        return INICI;
+                    case 'F':
+                        return FINAL;
+                    case 'B':
+                        return USELESS;
+                    case '2':
+                        if((car = super.read()) == '~') return INS;
+                        else   return '2';
+                    case '3':
+                        if((car = super.read()) == '~') return DEL;
+                        else    return '3';
+    
+                    default:
+                        return car;
+                }
+            }
+            else if (car == BACKSPACE){
+                this.linia.Backspace();
+
+            }
+
+            else if (car != ENTER){
+                this.linia.addCaracter(car);
+            }
+                //___DEBUG___
+                int aux = this.linia.getPos()+1;                  //CODI BO
+                System.out.print("\r"+this.linia.toString());    //CODI BO
+                System.out.print("\033["+aux+"G");                //CODI BO
+        }while(car != ENTER);
+        this.linia.enter();
+        return this.linia.toString();
+    }
 
 
 
