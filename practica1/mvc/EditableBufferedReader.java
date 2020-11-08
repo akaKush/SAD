@@ -8,8 +8,7 @@ public class EditableBufferedReader extends BufferedReader {
      * @param args
      */
     public static void main(String[] args) { //afegeixo main pq sino em salta un error
-        // TODO code application logic here
-    }
+        
 
     public EditableBufferedReader(Reader in) {
         super(in);
@@ -114,5 +113,5 @@ public class EditableBufferedReader extends BufferedReader {
         console.clear();
         return lines.toString();
     }
-
+}
 }

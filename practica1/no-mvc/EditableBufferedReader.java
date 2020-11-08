@@ -10,9 +10,9 @@ import java.util.*;
 
 public class EditableBufferedReader extends BufferedReader {
 
-    public static void main(String[] args) { //afegeixo main ja que sino em dóna error al executar
-        // TODO code application logic here
-    }
+    private Line linia;
+    private int posicio;
+    private int length;
 
     private static final char ESC = '\033';
 
@@ -67,7 +67,7 @@ public class EditableBufferedReader extends BufferedReader {
     */
 
     public int read() throws IOException {
-        int car = super.read();
+        int car = 0;
         int num = 0;
 
         //comprovem si el primer car != ESC, si ho és surt de la funcio
@@ -105,53 +105,53 @@ public class EditableBufferedReader extends BufferedReader {
     }
 
 
-    public String readLine() throws IOException {
+    public String readLine() throws IOException, InterruptedIOException {
+
         int car = 0;
         do{
-            car = this.read();
-            if (car == '[' || car == 'O') {
-                switch (car = super.read()) {
-                    case 'C':
-                        return DRETA;
-                    case 'D':
-                        return ESQUERRA;
-                    case 'H':
-                        return INICI;
-                    case 'F':
-                        return FINAL;
-                    case 'B':
-                        return USELESS;
-                    case '2':
-                        if((car = super.read()) == '~') return INS;
-                        else   return '2';
-                    case '3':
-                        if((car = super.read()) == '~') return DEL;
-                        else    return '3';
-    
+            car=this.read();
+
+            if(car >= ESC){
+                switch (car){
+                    case INS:
+                        this.linia.changeInsert();
+                    break;
+                    case DEL:
+                        this.linia.delete();
+                    break;
+                    case DRETA:
+                        this.linia.right();
+                    break;
+
+                    case BACKSPACE:
+                        this.linia.backspace();
+                    break;
+                    case FINAL:
+                        this.linia.fin();
+                    break;
+                    case INICI:
+                        this.linia.home();
+                    break;
+                    case ESQUERRA:
+                        this.linia.left();
+                    break;
                     default:
-                        return car;
+                        System.out.println("Invalid input!!");
+                    break;
+
                 }
-            }
-            else if (car == BACKSPACE){
-                this.linia.Backspace();
-
-            }
-
-            else if (car != ENTER){
+            }else if(car!=ENTER){
                 this.linia.addCaracter(car);
+            }else{
+                System.out.println("Invalid input!!");
             }
-                //___DEBUG___
-                int aux = this.linia.getPos()+1;                  //CODI BO
-                System.out.print("\r"+this.linia.toString());    //CODI BO
-                System.out.print("\033["+aux+"G");                //CODI BO
+            
+            int aux = this.linia.getPos()+1;                
+            System.out.print("\r"+this.linia.toString());   
+            System.out.print("\033["+aux+"G");                
         }while(car != ENTER);
         this.linia.enter();
         return this.linia.toString();
     }
-
-
-
-
-
 
 }
