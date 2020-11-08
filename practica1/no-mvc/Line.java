@@ -90,41 +90,41 @@ public class Line{
         //this.setChanged();
     }
 
-    public void Home(){
+    public void home(){
         this.cursor = 0;
        // this.setChanged();
     }
 
-    public void Fin(){
+    public void fin(){
         this.cursor = this.lineBuffer.size();
         //this.setChanged();
     }
 
-    public void Delete(){
-      if(this.cursor = this.lineBuffer.size(){
+    public void delete(){
+      if(this.cursor == this.lineBuffer.size()){
         this.lineBuffer.remove(this.cursor);
         this.length --;
       }
       //this.setChanged();
     }
 
-    public void Backspace(){
+    public void backspace(){
         if((this.cursor <= this.lineBuffer.size())&&(this.lineBuffer.size()>0) && this.cursor > 0){
             this.lineBuffer.remove(this.cursor-1);
-            this.Left();
+            this.left();
             this.length--;
         }
        // this.setChanged();
     }
 
-    public void Right(){
+    public void right(){
       if(this.cursor < this.lineBuffer.size()) {
         this.cursor ++;
       }
       //this.setChanged();
     }
 
-    public void Left(){
+    public void left(){
       if(this.cursor > 0){
         this.cursor --;
       }
