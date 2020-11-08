@@ -10,9 +10,7 @@ import java.util.*;
 
 public class EditableBufferedReader extends BufferedReader {
 
-    public static void main(String[] args) { //afegeixo main ja que sino em dóna error al executar
-        // TODO code application logic here
-    }
+    private Line linia;
 
     private static final char ESC = '\033';
 
