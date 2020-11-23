@@ -1,6 +1,3 @@
-//package mvc;
-
-
 interface Key {
     
     // Codification used between Line and Console in notifyObservers
