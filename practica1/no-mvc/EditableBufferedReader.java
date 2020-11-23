@@ -15,7 +15,7 @@ public class EditableBufferedReader extends BufferedReader {
     private int length;
 
     private static final char ESC = '\033';
-
+    private static final char _ESC = 199;
     private static final int ESQUERRA = 200;
     private static final int DRETA = 201;
     private static final int INICI = 203;
@@ -25,7 +25,7 @@ public class EditableBufferedReader extends BufferedReader {
 
     private static final int USELESS = 202;
     private static final int BACKSPACE = 127;
-    private static final int ENTER = 13;
+    private static final int ENTER = 10;
 
     
     public EditableBufferedReader(Reader in){
@@ -68,39 +68,40 @@ public class EditableBufferedReader extends BufferedReader {
 
     public int read() throws IOException {
         int car = 0;
-        int num = 0;
+        //int num = 0;
 
         //comprovem si el primer car != ESC, si ho és surt de la funcio
-        if(car != ESC) {
-            return car;
-        }
+       
 
         //si no ho era continuem llegint
         car = super.read();
-        if (car == '[' || car == 'O') {
+        if(car != ESC) {
+            //return car;
+        }
+        else if (car == ESC) {
+            car = super.read();
             switch (car = super.read()) {
                 case 'C':
-                    return DRETA;
+                    car = DRETA;
                 case 'D':
-                    return ESQUERRA;
+                car = ESQUERRA;
                 case 'H':
-                    return INICI;
+                car = INICI;
                 case 'F':
-                    return FINAL;
+                car = FINAL;
                 case 'B':
-                    return USELESS;
+                car = USELESS;
                 case '2':
-                    if((car = super.read()) == '~') return INS;
-                    else   return '2';
+                    if((car = super.read()) == '~') car = INS;
+                    else   car = '2';
                 case '3':
-                    if((car = super.read()) == '~') return DEL;
-                    else    return '3';
+                    if((car = super.read()) == '~') car = DEL;
+                    else    car = '3';
 
                 default:
-                    return car;
+                    //return car;
             }
         }
-        //en cas que no sigui cap de les opcions anteriors
         return car;
     }
 
@@ -111,7 +112,7 @@ public class EditableBufferedReader extends BufferedReader {
         do{
             car=this.read();
 
-            if(car >= ESC){
+            if(car >= _ESC){
                 switch (car){
                     case INS:
                         this.linia.changeInsert();
@@ -136,21 +137,19 @@ public class EditableBufferedReader extends BufferedReader {
                         this.linia.left();
                     break;
                     default:
-                        System.out.println("Invalid input!!");
+                        System.out.println("Invalid input 1");
                     break;
 
                 }
-            }else if(car!=ENTER){
+            }else if(car != ENTER){
                 this.linia.addCaracter(car);
-            }else{
-                System.out.println("Invalid input!!");
             }
             
-            int aux = this.linia.getPos()+1;                
-            System.out.print("\r"+this.linia.toString());   
-            System.out.print("\033["+aux+"G");                
+            // int aux = this.linia.getPos()+1;                
+            // System.out.print("\r"+this.linia.toString());
+            // System.out.print("\033["+aux+"G");       
         }while(car != ENTER);
-        this.linia.enter();
+        //System.out.println(car);
         return this.linia.toString();
     }
 
