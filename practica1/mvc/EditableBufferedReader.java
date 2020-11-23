@@ -1,5 +1,3 @@
-package mvc;
-
 import java.io.*;
 import java.util.*;
 
@@ -46,7 +44,7 @@ public class EditableBufferedReader extends BufferedReader {
     @Override
     public int read() throws IOException {
 
-        int lect;
+        int lect = 0;
         try{
             lect = super.read();
             if (lect == Key.ESC) {
