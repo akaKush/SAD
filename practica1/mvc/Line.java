@@ -1,6 +1,5 @@
-package mvc;
-
-import java.util.Observable;
+import java.util.*;
+import java.io.*;
 
 public class Line extends Observable{
     ArrayList<Integer> buffer;
