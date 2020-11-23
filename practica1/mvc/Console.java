@@ -8,7 +8,7 @@ public class Console implements Observer {
         if(action[0]=="true"){
             System.out.print(action[1]);
         }else{
-            System.out.println("Invalid input!");
+            System.out.println("Invalid input");
         }
     }
 }
