@@ -1,108 +1,140 @@
-package mvc;
+import java.util.*;
+import java.io.*;
 
+public class Line extends Observable{
+    ArrayList<Integer> buffer;
+    private int posCursor;
+    private int length;
+    private int pos;
+    private boolean insert;
 
-public class Line {
-    private StringLine line;
-    private boolean mode;
-    //si mode --> sobreescribim (setChartAt)
-    //si !mode --> insertem (insertChartAt)
-    private int posx;
+    private String[] action;
+    private StringBuilder line;
 
+    public Line() {
+        this.buffer = new ArrayList<>();
+        this.line = new StringBuilder();
+        this.posCursor = 0;
+        this.length = 0;
+        this.insert = false;
+        this.action = new String[2];
 
-    //default constructor
-    public Line(int maxX) {
-        this.posx = 0;
-        this. line = new StringLine(maxX);
-        this.mode = Boolean.FALSE;
     }
 
-    //constructor si passem maxY com a paràmetre
-    public Line(int maxX, int maxY) {
-        this.posx = 0;
-        this.line = new StringLine(maxX, maxY);
-        this.mode = Boolean.FALSE;
+    public StringBuilder getLine() {
+        return this.line;
     }
 
-
-    //constructor si els parametres són mode i line (newline)
-    public Line(boolean mode, StringLine newLine) {
-        this.line = newLine;
-        this.mode = mode;
-        this.posx = newLine.length();
+    public int getPosCursor() {
+        return this.posCursor;
     }
-
-    public boolean getMode() {
-        return this.mode;
-    }
-
-    public void setMode(Boolean mode) {
-        this.mode = mode;
-    }
-
-    public void addChar(char c) throws IndexOutOfBoundsException {
-        //primer comprovem si volem insertar o sobreescriure
-        if(mode) this.line.setChartAt(c, this.posx);
-        else this.line.insertChartAt(c, this.posx);
-        this.posx++;
-    }
-
-    public void deleteChar() throws IndexOutOfBoundsException {
-        this.line.deleteCharAt(this.posx - 1);
-        this.posx--;
-    }
-
-    public void suprimirChar() throws IndexOutOfBoundsException {
-        this.line.suprCharAt(this.posx);
-    }
-
-    public void moveLeft() {
-        if (this.posx > 0) this.posx--;
-        else throw new IndexOutOfBoundsException("Left");
-    }
-
-    public void moveRight() {
-        if (this.posx < this.line.MAX) this.posx++;
-        else throw new IndexOutOfBoundsException("Right");
-    }
-
-    public void moveEnd() {
-        this.posx = this.line.length();
-    }
-
-    public void moveHome() {
-        this.posx = 0;
-    }
-
-    public int getLinePos(){
-        return this.posx;
-    }
-
-    public void setPos(int posx){
-        if(posx > 0 && posx < line.MAX) {
-            this.posx = posx;
-        }
-    }
-
-    @Override
-    public String toString() {
-        return line.toString();
-    }
-
     public int getLength() {
         return this.line.length();
     }
 
-    public StringLine getStringLine(){
-        return this.line;
+    public Boolean getMode() {
+        return this.insert;
     }
 
-    public Line concat(Line line_to_concat) {
-        if(line!=null){
-            this.posx = this.posx + line_to_concat.getLength();
-            return (new Line(this.mode, this.line.concat(line_to_concat.getStringLine())));
+
+    public void invInput(){
+        action[0]="false";
+        this.setChanged(); //mètode està deprecated
+        this.notifyObservers(action); //metode està depecrated
+
+    } 
+
+
+
+    public void addCaracter(char newChar) {
+
+        if (getMode()) { //mode insert
+            this.line.replace(this.posCursor, this.posCursor + 1, "" + newChar);
+            action[0]="true";
+            action[1] = "" + newChar;
+            this.setChanged();
+            this.notifyObservers(action);
+
+        } else {        //add character
+
+            this.line = this.line.insert(this.posCursor, newChar);
+            action[0] = "true";//"insertChar";
+            action[1] = ANSI.INSERT+newChar;  /*ANSI.INSERT + */
+            this.setChanged();
+            this.notifyObservers(action);
+           
         }
-        return null;
+     
+        this.posCursor++;
+
     }
 
-    
+    public void toInsert() {
+       
+        this.insert = !this.insert;
+
+    }
+
+    public void backspace() {
+       if ((this.getLength() > 0) && this.posCursor > 0) {
+            int pos=this.posCursor - 1;
+            this.line.deleteCharAt(pos);
+            this.posCursor--;
+            action[0] = "true";
+            action[1] = ANSI.BS;
+            this.setChanged();
+            this.notifyObservers(action);
+        }
+    }
+
+    public void end() {
+        int posFin = this.getLength() - this.posCursor;
+        this.posCursor = this.getLength();
+        action[0] = "true";
+        action[1] = ANSI.END1+posFin+ANSI.END2; // In this case we pass the number to move
+        this.setChanged();
+        this.notifyObservers(action);
+    }
+
+    public void home() {
+        this.posCursor = 0;
+        action[0] = "true";
+        action[1] = ANSI.HOME;
+        this.setChanged();
+        this.notifyObservers(action);
+    }
+
+    public void left() {
+ 
+        if (this.posCursor > 0) {
+            this.posCursor--;
+            action[0] = "true";
+            action[1] = ANSI.LEFT;
+            this.setChanged();
+            this.notifyObservers(action);
+        }
+    }
+
+    public void right() {
+      
+        if (this.posCursor < this.getLength()) {
+            this.posCursor++;
+            action[0] = "true";
+            action[1] = ANSI.RIGHT;
+            this.setChanged();
+            this.notifyObservers(action);
+        }
+    }
+
+    public void suprimir() {
+      
+       if (this.posCursor < getLength()) {
+            int pos=this.posCursor;
+            this.line.deleteCharAt(pos);
+            action[0] = "true";
+            action[1] = ANSI.DEL;
+            this.setChanged();
+            this.notifyObservers(action);
+        }
+    }
 }

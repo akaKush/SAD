@@ -1,117 +1,137 @@
-package mvc;
-
-import java.io.Console;
+import java.io.*;
+import java.util.*;
 
 public class EditableBufferedReader extends BufferedReader {
-
-    /**
-     * @param args
-     */
-    public static void main(String[] args) { //afegeixo main pq sino em salta un error
         
+    private Line line;
+    private Console console;
 
     public EditableBufferedReader(Reader in) {
         super(in);
+        this.line = new Line(); //<-- Model
+        this.console = new Console(); //<-- View
+        this.line.addObserver(this.console);
     }
 
-    public void setRaw() throws InterruptedException, IOException {
-        String[] cmd = {"sh", "-c", "stty -echo raw</dev/tty"};
-        Runtime.getRuntime().exec(cmd);
+    public void setRaw() {
+        String[] cmd = { "/bin/sh", "-c", "stty -echo raw </dev/tty" }; // Comana per canviar la consola a mode Raw
+        Process p;
+        try {
+            p = Runtime.getRuntime().exec(cmd);
+            if (p.waitFor() == 1) {
+                p.destroy();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
-    public void unsetRaw() throws IOException, InterruptedException {
-        String[] cmd = {"sh", "-c", "stty echo cooked</dev/tty"};
-        Runtime.getRuntime().exec(cmd);
+    public void unsetRaw() {
+        String[] cmd = { "/bin/sh", "-c", "stty echo cooked </dev/tty" }; // Comana per canviar la consola a mode Cooked
+        Process p;
+        try {
+            p = Runtime.getRuntime().exec(cmd);
+            if (p.waitFor() == 1) {
+                p.destroy();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-
 
 
     @Override
-    public int read() {
+    public int read() throws IOException {
 
-        int lect;
+        int lect = 0;
         try{
-            if ((lect = super.read()) != Key.ESC) {
-                return lect;
-            }
             lect = super.read();
-            if (lect == Key.CRTL_C) {
-                System.err.print("Exiting");   
-                return Key.EXIT_KEY;
-            }
-            if (lect == Key.CLAU) {
+            if (lect == Key.ESC) {
                 lect = super.read();
-                return lect - 1000;
+                if (lect == Key.CORCHETE){
+                    lect = super.read();
+                    switch (lect) {
+                        case Key.INSERT:
+                            super.read();
+                            lect = Key._INSERT;
+                            break;
+                        case Key.SUPR:
+                            super.read();
+                            lect = Key._SUPR;
+                            break;
+                        case Key.HOME:
+                            lect= Key._HOME;
+                            break;
+                        case Key.LEFT:
+                            lect= Key._LEFT;
+                            break;
+                        case Key.RIGHT:
+                            lect= Key._RIGHT;
+                            break;
+                        case Key.END:
+                            lect= Key._END;
+                            break;
+                        default:
+                            lect=Key._INVINPUT;
+                            break;
+                    }
+                } else { 
+                lect = Key._INVINPUT;
+                }
+            }else if (lect == Key.BACKSPACE){
+            lect = Key._BACKSPACE;
             }
-        } catch (IOException ex) {
-            System.out.println("Interrupted Exception");
+        }catch(IOException e){
+            e.printStackTrace();
         }
-        return Key.CARAC;
+        return lect;
     }
 
     public String readLine() throws IOException {
 
-        Console console = new Console(lines);
-        lines.addObserver(console);
         this.setRaw();
-        int lect = -1;
-
-        try{
-            while( lect != Key.CRTL_C){
-                lect = this.read();
-
-                switch(lect){
-                    case (Key.UP - 1000):
-                        lines.moveUp();
-                        break;
-                    case (Key.DOWN - 1000):
-                        lines.moveDown();
-                        break;
-                    case (Key.RIGHT - 1000):
-                        lines.moveRight();
-                        break;
-                    case (Key.LEFT - 1000):
-                        lines.moveLeft();
-                        break;
-                    case (Key.INSERT - 1000):
-                        //flush Buffer
-                        this.read();
-                        lines.setMode();
-                        break;
-                    case (Key.SUPR - 1000):
-                        this.read();
-                        lines.suprimirChar();
-                        break;
-                    case (Key.HOME - 1000):
-                        lines.moveHome();
-                        break;
-                    case (Key.END - 1000):
-                        lines.moveEnd();
-                        break;
-                    case (Key.EXIT):
-                        lines.newLine();
-                        break;
-                    case (Key.DEL):
-                        lines.deleteChar();
-                        break;
-                    case (Key.CARAC):
-                        console.clear();
-                        System.out.println("Error while entering code");
-                        this.unsetRaw();
-                        return "ERROR";
-                    case (Key.CRTL_C):
-                        break;
-                    default:
-                        lines.addChar((char) lect);
-                        break;
+          int r_lect=0;
+           do{ 
+               r_lect=this.read();
+                
+                if(r_lect >= Key._ESCAPE){
+                    switch (r_lect){
+                            case Key._INSERT:
+                                this.line.toInsert();
+                            break;
+                            case Key._SUPR:
+                                this.line.suprimir();
+                            break;
+                            case Key._RIGHT:
+                                this.line.right();
+                            break;
+                            
+                            case Key._BACKSPACE:
+                                this.line.backspace();
+                            break;
+                            case Key._END:
+                                this.line.end();
+                            break;
+                            case Key._HOME:
+                                this.line.home();
+                            break;
+                            case Key._LEFT:
+                                this.line.left();
+                            break;
+                            default:
+                                this.line.invInput();
+                            break;
+                           
+                    }
+                }else if(r_lect!=Key.ENTER){
+                    line.addCaracter((char)r_lect);
                 }
-            }
-        } catch (IndexOutOfBoundsException ex) {
-            System.out.println("Error: out of boundaries");
-        }
-        this.unsetRaw();
-        console.clear();
-        return lines.toString();
+                     
+       } while(r_lect != Key.ENTER);
+       this.unsetRaw();
+       return line.getLine().toString();
     }
-}
+
+    
 }
