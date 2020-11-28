@@ -3,5 +3,6 @@
 <ol>
   <li>First examples with webRTC</li>
   <li>First React Meteor to-do app</li>
-  <li>WebRTC + Meteor/React integration</li>
+  <li>React Webrtc + socket io</li>
+  <li>WebRTC + Meteor + React integration</li>
 </ol>
