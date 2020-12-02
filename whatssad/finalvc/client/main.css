@@ -158,10 +158,10 @@ body {
 }
 
 .msg-l {
-  background-color: white;
-  padding: 6px 10px;
-  border-radius: 4px;
-  color: gray;
+  background-color: white !important;
+  padding: 6px 10px !important;
+  border-radius: 4px !important;
+  color: gray !important;
 }
 
 /*MSG-INPUT-CONT*/

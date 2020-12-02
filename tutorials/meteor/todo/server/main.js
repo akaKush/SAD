@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import {TasksCollection} from '../imports/api/TasksCollection';
+import {chatCollection} from '../imports/api/chat';
 
 const insertTask = (taskText, user) =>
   TasksCollection.insert({
@@ -8,36 +9,17 @@ const insertTask = (taskText, user) =>
     createdAt: new Date(),
 });
 
-const SEED_USERNAME = 'meteorite';
-const SEED_PASSWORD = 'password';
 
-if (!Accounts.findUserByUsername(SEED_USERNAME)) {
-  Accounts.createUser({
-    username: SEED_USERNAME,
-    password: SEED_PASSWORD,
-  });
-}
+const insertChat = (userId, userName, userMsg) => {
+  chatCollection.inser({
+  id: userId,
+  name: userName,
+  msg: userName })
+};
+
+
+
 
 Meteor.startup(() => {
 
-  if (!Accounts.findUserByUsername(SEED_USERNAME)) {
-    Accounts.createUser({
-      username: SEED_USERNAME,
-      password: SEED_PASSWORD,
-    });
-  }
-
-  const user = Accounts.findUserByUsername(SEED_USERNAME);
-
-  if (TasksCollection.find().count() === 0) {
-    [
-      'First Task',
-      'Second Task',
-      'Third Task',
-      'Fourth Task',
-      'Fifth Task',
-      'Sixth Task',
-      'Seventh Task',
-    ].forEach(taskText => insertTask(taskText, user));
-  }
-});
+})
