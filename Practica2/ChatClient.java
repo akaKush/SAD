@@ -1,12 +1,12 @@
 import java.net.*;
 import java.io.*;
 
-public class MySocket {
+public class ChatClient {
     private String hostname;
     private int port;
     private String userName;
  
-    public MySocket(String hostname, int port) {
+    public ChatClient(String hostname, int port) {
         this.hostname = hostname;
         this.port = port;
     }
@@ -38,16 +38,11 @@ public class MySocket {
  
  
     public static void main(String[] args) {
-        if (args.length < 2) {
-            System.out.println("Please try again =)");
-            System.out.println("Syntax: java MySocket <hostname> <port-number>");
-            System.exit(0);
-        }
- 
+        if (args.length < 2) return;
         String hostname = args[0];
         int port = Integer.parseInt(args[1]);
  
-        MySocket client = new MySocket(hostname, port);
+        ChatClient client = new ChatClient(hostname, port);
         client.execute();
     }
 }

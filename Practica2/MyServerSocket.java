@@ -1,92 +1,110 @@
-import java.net.*;
 import java.io.*;
+import java.net.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MyServerSocket {
 
-    ServerSocket ss;
-    Socket s; 
-    PrintWriter dout;
-    BufferedReader din;
+    private int port;
+    //Store all the clients in a map: key -> client name , value -> a thread that servers a client
+    public static ConcurrentHashMap<String, Server> clients = new ConcurrentHashMap<String, Server>();
 
-    public static void main(String[] args){
-        new MyServerSocket();
+    public MyServerSocket(int port) {
+        this.port = port;
     }
-
-    public MyServerSocket(){
-
-        try{
-
-            //Creates a stream socket and connects it to the 
-            //specified port number
-            this.ss = new ServerSocket(4000);
-            System.out.println("Server Running on port: 4000");
-
-            //Wait until there is a connection from a client
-            this.s = this.ss.accept();
-            System.out.println("client connected");
-
-            //Create a OutPutStream of Data
-            this.dout = new PrintWriter(this.s.getOutputStream());
-
-            //Create an InputStream of Data
-            InputStreamReader in = new InputStreamReader(this.s.getInputStream());
-            this.din = new BufferedReader(in);
-            
-            //Listen from Data from Client
-            this.listenForData();
-
-        }catch(IOException e){
-            e.printStackTrace();
+ 
+    public void execute() {
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
+ 
+            System.out.println("Chat Server is listening on port " + port);
+ 
+            while (true) {
+                //Waits until a new client is connected
+                Socket socket = serverSocket.accept();
+                System.out.println("New user connected");
+                
+                //Start a thread that will server to this client
+                Server newUser = new Server(socket, this);
+                
+                newUser.start();
+ 
+            }
+ 
+        } catch (IOException ex) {
+            //Handle exceptions
+            System.out.println("Error in the server: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+ 
+    public static void main(String[] args) {
+        
+        //Handle user admin not starting correctly the server
+        if (args.length < 1) {
+            System.out.println("Please try again =)");
+            System.out.println("Syntax: java MyServerSocket <port-number>");
+            System.exit(0);
         }
         
+        //Parse the port of the server
+        int port = Integer.parseInt(args[0]);
+        
+        //Initialize the server
+        MyServerSocket server = new MyServerSocket(port);
+
+        //Start the server
+        server.execute();
     }
+ 
+    /**
+     * Delivers a message from one user to others (broadcasting)
+     */
+    void broadcast(String message, String excludeUser) {
+       
+        for (String key : this.clients.keySet()) { 
 
-    //Close all the socket connections
-    public void closeSCon(){
-        try{
-
-            this.din.close();
-            this.dout.close();
-            this.s.close();
-            this.ss.close();
-
-        }catch(IOException e){
-            e.printStackTrace();
-        }
+            //Checks not sending the message to the same user
+            if(!key.equals(excludeUser)){
+                this.clients.get(key).sendMessage(message);
+            }
+         }
+        
     }
-
-    public void listenForData(){
-
-        while(true){
-
-            try{
-
-                 //Check if is there response from the client
-                 while(this.din.ready() == false){
-
-                    try {
-                        //Sleep the thread in order to reduce the CPU usage
-                        Thread.sleep(1);
-                    } catch (InterruptedException e) {
-                        //Handle exception
-                        e.printStackTrace();
-                }
-            }
-                String dataIn = this.din.readLine();
-                System.out.println("Response: " + dataIn);
-
-                this.dout.println(dataIn);
-                this.dout.flush();
-   
-            }catch(IOException e){
-                //Handle exception
-                e.printStackTrace();
-                break;
-            }
-
+ 
+    /**
+     * Stores username and the threads that 
+     * servers this newly connected client.
+     */
+    void addUserName(String userName, Server server) {
+     
+        this.clients.put(userName, server);
+    }
+ 
+    /**
+     * When a client is disconneted, removes the associated username and UserThread
+     * The client that leaves notifies to other clients -> check class Server in the run method
+     */
+    void removeUser(String userName, Server aUser) {
+        
+        clients.remove(userName);
+        System.out.println("The user " + userName + " quitted");
+    }
+ 
+    /**
+     * Returns all the names of the clients
+     */
+    Set<String> getUserNames() {
+        Set<String> userNames = new HashSet<>();
+        for (String key : this.clients.keySet()) {
+            userNames.add(key);
         }
-
-        this.closeSCon();
+        return userNames;
+    }
+ 
+    /**
+     * Returns true if there are other users connected 
+     */
+    boolean hasUsers() {
+        return !this.clients.isEmpty();
     }
 }
