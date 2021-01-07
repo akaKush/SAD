@@ -7,5 +7,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MySocketcool extends Socket{
+    Socket sc;
+
+    //constructor
+    public MySocketcool(String host, int port){
+        try {
+            this.sc = new Socket(host, port);
+        } catch (IOException ex) {
+            Logger.getLogger(MySocketcool.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     
 }
