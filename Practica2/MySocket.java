@@ -10,7 +10,13 @@ public class MySocket {
         this.hostname = hostname;
         this.port = port;
     }
- 
+    
+    /**
+     * Each client will be composed by two threads: 
+     * -One reading thread that listens all the messages that come from the server
+     * -One writing thread that listens to the messages that write the user in the console
+     */
+    
     public void execute() {
         try {
             Socket socket = new Socket(hostname, port);

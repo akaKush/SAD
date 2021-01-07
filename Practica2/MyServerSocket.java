@@ -6,7 +6,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MyServerSocket {
 
     private int port;
-    //Store all the clients in a map: key -> client name , value -> a thread that servers a client
+    /**
+     * Store all the clients in a map:
+     * key -> client name 
+     * value -> a thread that servers a client
+     */
     public static ConcurrentHashMap<String, Server> clients = new ConcurrentHashMap<String, Server>();
 
     public MyServerSocket(int port) {
