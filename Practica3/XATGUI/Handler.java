@@ -35,4 +35,16 @@ class ServerHandler implements Runnable {
         nicks=nicks.replace(", ","-");
         return nicks;
     }
+
+    public void run() {
+        try {
+            if (selkey.isReadable())
+                read();
+            else if (selkey.isWritable())
+                write();
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 }
