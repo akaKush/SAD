@@ -15,4 +15,24 @@ class NIOServer implements Runnable {
     final static int localport = 9090;
     final ServerSocketChannel serverch;
     HashMap<String,ServerHandler> uMap;
+
+    public static void main(String[] args) {
+        try {
+            new Thread(new NIOServer(localport)).start();
+            System.out.println("SERVER ON PORT: "+localport);
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    NIOServer(int port) throws IOException {
+        selector = Selector.open();
+        serverch = ServerSocketChannel.open();
+        serverch.socket().bind(new InetSocketAddress(port));
+        serverch.configureBlocking(false);
+        SelectionKey sk = serverch.register(selector, SelectionKey.OP_ACCEPT);
+        sk.attach(new Acceptor());
+        uMap = new HashMap<String,ServerHandler>();
+    }
 }
