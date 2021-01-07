@@ -31,15 +31,19 @@ public class MySocketcool extends Socket{
     }
 
     public InputStream MyGetInputStream(){
-       
+        
     }
 
     public OutputStream MyGetOutputStream(){
         
     }
-
+    
     @Override
     public void close(){
-        
+        try {
+            sc.close();
+        } catch (IOException ex) {
+            Logger.getLogger(MySocketcool.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
