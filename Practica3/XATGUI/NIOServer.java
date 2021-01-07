@@ -45,11 +45,34 @@ class NIOServer implements Runnable {
                     System.out.println(socketch.toString() + ": Login Attempt");
                     ByteBuffer rbuff = ByteBuffer.allocate(1024);
                     int nbytes = socketch.read(rbuff);
+                    if (nbytes == -1) {
+                        socketch.close();
+                    }
+                    else {
+                        byte[] bytes;
+                        rbuff.flip();
+                        bytes = new byte[rbuff.remaining()];
+                        rbuff.get(bytes, 0, bytes.length);
+                        String nick = (new String(bytes, Charset.forName("ISO-8859-1"))).trim();
+                        String resp = (!uMap.containsKey(nick)? "true" : "false");
 
-
-
-                } else {
-                    socketch.close();
+                        if (resp.equals("true")){
+                            System.out.println(socketch.toString() + ": Nick assigned = "+nick);
+                            uMap.put(nick,new ServerHandler(selector, socketch, nick, uMap));
+                            System.out.println("Welcome to the chat server "+nick);
+                            String nicklist=nicks(uMap);
+                            uMap.forEach((k,s) -> {
+                                try{
+                                    s.socketch.write(ByteBuffer.wrap((nick+" joined the chat\n").getBytes()));
+                                    s.socketch.write(ByteBuffer.wrap(("updateUser-"+nicklist+"\n").getBytes()));
+                                }catch (IOException ex) {
+                                    ex.printStackTrace();
+                                }
+                            });
+                        } else {
+                           socketch.close();
+                        }
+                    }
                 }
             }
             catch (IOException ex) {
