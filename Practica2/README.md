@@ -21,6 +21,6 @@ La classe ReadThread llegeix la informació que arriba per el servidor i la most
 La classe WriteThread llegeix la informació que introdueix l'usuari per consola i l'envia pel socket que es
 comunica amb el servidor.
 
-4. Per executar l'apliació
+4. Per executar l'apliació <br>
 Servidor: java MyServerSocket "port-number" <br>
-Client: java Main "host" "port-number"
+Client: java MySocket "host" "port-number"
