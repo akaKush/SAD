@@ -47,7 +47,9 @@ class NIOServer implements Runnable {
                     int nbytes = socketch.read(rbuff);
 
 
-                    
+
+                } else {
+                    socketch.close();
                 }
             }
             catch (IOException ex) {
