@@ -28,4 +28,11 @@ class ServerHandler implements Runnable {
         selkey.interestOps(SelectionKey.OP_READ);
         sel.wakeup();
     }
+    public String nicks(HashMap umap){
+        String nicks=umap.keySet().toString();
+        nicks=nicks.replace("[","");
+        nicks=nicks.replace("]","");
+        nicks=nicks.replace(", ","-");
+        return nicks;
+    }
 }
