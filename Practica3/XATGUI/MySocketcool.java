@@ -18,5 +18,8 @@ public class MySocketcool extends Socket{
         }
     }
 
-    
+    public MySocketcool(Socket soc){
+        this.sc = soc;
+    }
+
 }
