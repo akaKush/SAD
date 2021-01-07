@@ -22,4 +22,24 @@ public class MySocketcool extends Socket{
         this.sc = soc;
     }
 
+    public void MyConnect(SocketAddress endpoint){
+        try {
+            this.sc.connect(endpoint);
+        } catch (IOException ex) {
+            Logger.getLogger(MySocketcool.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public InputStream MyGetInputStream(){
+       
+    }
+
+    public OutputStream MyGetOutputStream(){
+        
+    }
+
+    @Override
+    public void close(){
+        
+    }
 }
