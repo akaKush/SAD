@@ -1,5 +1,7 @@
 package practica3;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
