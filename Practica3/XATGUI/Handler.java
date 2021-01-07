@@ -47,4 +47,21 @@ class ServerHandler implements Runnable {
             ex.printStackTrace();
         }
     }
+
+    void write() throws IOException {
+        uMap.forEach((k,s) -> {
+            if(!nick.equals(k)){
+                try{
+                    s.socketch.write(ByteBuffer.wrap(msg.getBytes()));
+                }catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            };
+        });
+        System.out.print(msg);
+
+        rbuff.clear();
+        selkey.interestOps(SelectionKey.OP_READ);
+        selkey.selector().wakeup();
+    }
 }
