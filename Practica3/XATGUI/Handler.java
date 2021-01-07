@@ -10,5 +10,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 class ServerHandler implements Runnable {
-    
+    final SocketChannel socketch;
+    final SelectionKey selkey;
+    String nick;
+    HashMap<String,ServerHandler> uMap;
+    ByteBuffer rbuff = ByteBuffer.allocate(1024);
+    String msg;
 }
