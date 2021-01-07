@@ -22,5 +22,5 @@ La classe WriteThread llegeix la informació que introdueix l'usuari per consola
 comunica amb el servidor.
 
 4. Per executar l'apliació
-Servidor: java MyServerSocket <port-number>
-Client: java Main <host> <port-number>
+Servidor: java MyServerSocket "port-number" <br>
+Client: java Main "host" "port-number"
