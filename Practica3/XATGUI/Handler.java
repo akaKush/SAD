@@ -16,4 +16,16 @@ class ServerHandler implements Runnable {
     HashMap<String,ServerHandler> uMap;
     ByteBuffer rbuff = ByteBuffer.allocate(1024);
     String msg;
+
+    ServerHandler(Selector sel, SocketChannel sc, String nick, HashMap<String,ServerHandler> uMap) throws IOException {
+        this.socketch = sc;
+        socketch.configureBlocking(false);
+        this.nick = nick;
+        this.uMap = uMap;
+
+        selkey = socketch.register(sel, SelectionKey.OP_READ);
+        selkey.attach(this);
+        selkey.interestOps(SelectionKey.OP_READ);
+        sel.wakeup();
+    }
 }
