@@ -40,7 +40,12 @@ public class MySocketcool extends Socket{
     }
 
     public OutputStream MyGetOutputStream(){
-        
+        try {
+            return sc.getOutputStream();
+        } catch (IOException ex) {
+            Logger.getLogger(MySocketcool.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
     
     @Override
