@@ -41,6 +41,14 @@ class NIOServer implements Runnable {
             try {
                 SocketChannel socketch = serverch.accept();
                 System.out.println(socketch.toString() + ": Socket Accepted");
+                if (socketch != null){
+                    System.out.println(socketch.toString() + ": Login Attempt");
+                    ByteBuffer rbuff = ByteBuffer.allocate(1024);
+                    int nbytes = socketch.read(rbuff);
+
+
+                    
+                }
             }
             catch (IOException ex) {
                 ex.printStackTrace();
