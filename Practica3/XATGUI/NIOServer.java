@@ -11,5 +11,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 class NIOServer implements Runnable {
-    
+    Socket sc;
+    public MySocketcool(String host, int port){
+        try {
+            this.sc = new Socket(host, port);
+        } catch (IOException ex) {
+            Logger.getLogger(MySocketcool.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }
