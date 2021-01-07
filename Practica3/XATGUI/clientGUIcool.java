@@ -23,4 +23,23 @@ public class clientGUIcool extends JFrame{
 
     }
 
+    class userClose extends SwingWorker<String, Object>{
+
+        @Override
+        protected String doInBackground() throws Exception {
+            monguer.addWindowListener(new WindowAdapter(){
+            @Override
+            public void windowClosing(WindowEvent e){
+                sc.close();
+                System.out.println("CLOSING CONNECTION");
+                System.exit(0);
+            }
+        });
+        return null;
+
+        }
+
+    }
+
+    
 }
