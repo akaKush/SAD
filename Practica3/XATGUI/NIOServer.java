@@ -11,5 +11,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 class NIOServer implements Runnable {
-    
+    final Selector selector;
+    final static int localport = 9090;
+    final ServerSocketChannel serverch;
+    HashMap<String,ServerHandler> uMap;
 }
