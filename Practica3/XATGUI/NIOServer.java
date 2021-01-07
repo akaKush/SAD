@@ -35,4 +35,16 @@ class NIOServer implements Runnable {
         sk.attach(new Acceptor());
         uMap = new HashMap<String,ServerHandler>();
     }
+
+    class Acceptor implements Runnable {
+        public void run() {
+            try {
+                SocketChannel socketch = serverch.accept();
+                System.out.println(socketch.toString() + ": Socket Accepted");
+            }
+            catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
 }
